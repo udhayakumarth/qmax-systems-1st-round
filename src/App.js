@@ -8,6 +8,8 @@ function App() {
   useEffect(() => {
     getPosts().then((res) => {
       setData(res.data)
+    }).catch((error) => {
+      console.log(error)
     })
   }, [])
   return (

@@ -13,6 +13,8 @@ export default function Post(props) {
     useEffect(() => {
         getUser(props.data.userId).then((res) => {
             setUser(res.data)
+        }).catch((error) => {
+            console.log(error)
         })
     }, [])
 

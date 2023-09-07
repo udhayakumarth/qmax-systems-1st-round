@@ -27,7 +27,6 @@ export default function HomeScreen(props) {
 
     useEffect(() => {
         localStorage.setItem("search", search);
-        console.log(localStorage.getItem("search"), "chenged");
         if (search.trim() === "") {
             setFilteredPosts(posts);
         } else {
@@ -54,7 +53,7 @@ export default function HomeScreen(props) {
         })
     }
 
-    const handleRefersh = () =>{
+    const handleRefersh = () => {
         setSearch("")
         setPosts(props.posts)
     }
@@ -69,6 +68,8 @@ export default function HomeScreen(props) {
         getComments(postId).then((res) => {
             setComments(res.data)
             setOpen(true)
+        }).catch((error) => {
+            console.log(error)
         })
     };
     const handleClose = () => setOpen(false);
