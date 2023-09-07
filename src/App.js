@@ -8,7 +8,6 @@ function App() {
   useEffect(() => {
     getPosts().then((res) => {
       setData(res.data)
-
     })
   }, [])
   return (

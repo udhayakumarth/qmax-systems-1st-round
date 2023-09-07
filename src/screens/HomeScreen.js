@@ -2,78 +2,58 @@ import Post from "../components/ui/Post";
 import Container from '@mui/material/Container';
 import Comment from "../components/ui/Comment";
 import { useEffect, useState } from "react";
-import { Typography, Button } from "@mui/material";
+import { Typography, InputAdornment } from "@mui/material";
 import IconButton from '@mui/material/IconButton';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import CloseIcon from "@mui/icons-material/Close";
-import Divider from "@mui/material/Divider";
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SearchIcon from '@mui/icons-material/Search';
 import Box from '@mui/material/Box';
-import InputBase from '@mui/material/InputBase';
-import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-export default function HomeScreen(props) {
+import TextField from '@mui/material/TextField';
+import { getComments } from "../api/apiService";
 
+export default function HomeScreen(props) {
+    const savedSearch = localStorage.getItem("search");
     const [posts, setPosts] = useState([]);
+    const [search, setSearch] = useState(savedSearch ? savedSearch : "");
+    const [filteredPosts, setFilteredPosts] = useState([]);
+    const [comments, setComments] = useState([]);
+
+    useEffect(() => {
+        localStorage.setItem("search", search);
+        console.log(localStorage.getItem("search"), "chenged");
+        if (search.trim() === "") {
+            setFilteredPosts(posts);
+        } else {
+            const filtered = posts.filter((post) =>
+                post.title.toLowerCase().includes(search.toLowerCase())
+            );
+            setFilteredPosts(filtered);
+        }
+    }, [search, posts]);
 
     useEffect(() => {
         setPosts(props.posts)
+        setFilteredPosts(props.posts);
     }, [props])
 
     const [open, setOpen] = useState(false);
-    const handleOpen = () => setOpen(true);
+    const handleOpen = (postId) => {
+        getComments(postId).then((res) => {
+            setComments(res.data)
+            setOpen(true)
+        })
+    };
     const handleClose = () => setOpen(false);
 
-    const Search = styled('div')(({ theme }) => ({
-        position: 'relative',
-        borderRadius: theme.shape.borderRadius,
-        backgroundColor: alpha(theme.palette.common.white, 0.15),
-        '&:hover': {
-            backgroundColor: alpha(theme.palette.common.white, 0.25),
-        },
-        marginLeft: 0,
-        width: '100%',
-        [theme.breakpoints.up('sm')]: {
-            marginLeft: theme.spacing(1),
-            width: 'auto',
-        },
-    }));
-
-    const SearchIconWrapper = styled('div')(({ theme }) => ({
-        padding: theme.spacing(0, 2),
-        height: '100%',
-        position: 'absolute',
-        pointerEvents: 'none',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    }));
-
-    const StyledInputBase = styled(InputBase)(({ theme }) => ({
-        color: 'inherit',
-        '& .MuiInputBase-input': {
-            padding: theme.spacing(1, 1, 1, 0),
-            paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-            transition: theme.transitions.create('width'),
-            width: '100%',
-            [theme.breakpoints.up('sm')]: {
-                width: '24ch',
-                '&:focus': {
-                    width: '34ch',
-                },
-            },
-        },
-    }));
-
-    console.log(posts.length);
     return (
         <div>
-            <Box sx={{ flexGrow: 1 }} style={{ marginBottom: 100 }}>
-                <AppBar position="fixed">
+            <Box sx={{ flexGrow: 1 }} style={{ marginBottom: 80 }}>
+                <AppBar color="inherit" position="fixed">
                     <Toolbar>
                         <Typography
                             variant="h6"
@@ -83,32 +63,43 @@ export default function HomeScreen(props) {
                         >
                             Posts
                         </Typography>
-                        <Button variant="outlined" startIcon={<RefreshIcon style={{ color: "white" }} />}>
-                            <Typography style={{ color: "white" }}>Refersh</Typography>
-                        </Button>
-                        <Search>
-                            <SearchIconWrapper>
-                                <SearchIcon />
-                            </SearchIconWrapper>
-                            <StyledInputBase
-                                placeholder="Search…"
-                                inputProps={{ 'aria-label': 'search' }}
-                            />
-                        </Search>
+                        <TextField
+                            size="small"
+                            variant="outlined"
+                            onChange={(e) => setSearch(e.target.value)}
+                            value={search}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                )
+                            }}
+                        />
+                        <IconButton aria-label="Refersh">
+                            <RefreshIcon />
+                        </IconButton>
                     </Toolbar>
+
                 </AppBar>
             </Box>
             <div>
                 <Container maxWidth="md">
                     <Container maxWidth="sm">
-                        <Typography style={{ marginBottom: 16 }} variant="body2" color="text.secondary">
-                            All Posts
-                        </Typography>
-                        <Divider style={{ marginBottom: 8 }} />
-                        {posts.length > 0 ?
+                        {search?.length > 0 ?
+                            <Typography style={{ marginBottom: 16 }} variant="body2" color="text.secondary">
+                                {`Search Result for "${search}"`}
+                            </Typography>
+                            :
+                            <Typography style={{ marginBottom: 16 }} variant="body2" color="text.secondary">
+                                All Posts
+                            </Typography>
+                        }
+
+                        {filteredPosts.length > 0 ?
                             <div>
                                 {
-                                    posts.map((element) => {
+                                    filteredPosts.map((element) => {
                                         return <Post key={element.id} data={element} handleCommentsOpen={handleOpen} />
                                     })
                                 }
@@ -143,8 +134,18 @@ export default function HomeScreen(props) {
                         <CloseIcon />
                     </IconButton>
                     <DialogContent>
-                        <Comment />
-                        <Comment />
+                        {posts.length > 0 ?
+                            <div>
+                                {
+                                    comments.map((element) => {
+                                        return <Comment key={element.id} data={element} />
+                                    })
+                                }
+                            </div>
+                            :
+                            <Typography variant="body2" color="text.secondary">
+                                No Comments Found.
+                            </Typography>}
                     </DialogContent>
                 </Dialog>
             </div>
