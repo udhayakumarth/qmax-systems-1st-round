@@ -32,7 +32,8 @@ export default function HomeScreen(props) {
             setFilteredPosts(posts);
         } else {
             const filtered = posts.filter((post) =>
-                post.title.toLowerCase().includes(search.toLowerCase())
+                post.title.toLowerCase().includes(search.toLowerCase()) ||
+                post.body.toLowerCase().includes(search.toLowerCase())
             );
             setFilteredPosts(filtered);
         }
@@ -51,6 +52,11 @@ export default function HomeScreen(props) {
             draggable: true,
             progress: undefined,
         })
+    }
+
+    const handleRefersh = () =>{
+        setSearch("")
+        setPosts(props.posts)
     }
 
     useEffect(() => {
@@ -83,6 +89,7 @@ export default function HomeScreen(props) {
                         <TextField
                             size="small"
                             variant="outlined"
+                            placeholder="Search.."
                             onChange={(e) => setSearch(e.target.value)}
                             value={search}
                             InputProps={{
@@ -93,7 +100,7 @@ export default function HomeScreen(props) {
                                 )
                             }}
                         />
-                        <IconButton aria-label="Refersh">
+                        <IconButton onClick={() => handleRefersh()} aria-label="Refersh">
                             <RefreshIcon />
                         </IconButton>
                     </Toolbar>
