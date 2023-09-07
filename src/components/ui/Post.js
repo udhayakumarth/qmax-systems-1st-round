@@ -27,7 +27,7 @@ export default function Post(props) {
                 title={user?.name}
                 subheader={`@${user?.username}`}
                 action={
-                    <IconButton aria-label="delete">
+                    <IconButton onClick={() => props.handleDelete(props.data.id)} aria-label="delete">
                         <DeleteIcon />
                     </IconButton>
                 }

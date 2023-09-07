@@ -2,7 +2,7 @@ import Post from "../components/ui/Post";
 import Container from '@mui/material/Container';
 import Comment from "../components/ui/Comment";
 import { useEffect, useState } from "react";
-import { Typography, InputAdornment } from "@mui/material";
+import { Typography, InputAdornment, Snackbar } from "@mui/material";
 import IconButton from '@mui/material/IconButton';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
@@ -15,6 +15,8 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import TextField from '@mui/material/TextField';
 import { getComments } from "../api/apiService";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function HomeScreen(props) {
     const savedSearch = localStorage.getItem("search");
@@ -35,6 +37,21 @@ export default function HomeScreen(props) {
             setFilteredPosts(filtered);
         }
     }, [search, posts]);
+
+    const handleDelete = (postId) => {
+        setPosts(posts.filter(function (element) {
+            return element.id !== postId;
+        }))
+        toast.success('Post Deleted!', {
+            position: "bottom-left",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        })
+    }
 
     useEffect(() => {
         setPosts(props.posts)
@@ -100,7 +117,7 @@ export default function HomeScreen(props) {
                             <div>
                                 {
                                     filteredPosts.map((element) => {
-                                        return <Post key={element.id} data={element} handleCommentsOpen={handleOpen} />
+                                        return <Post key={element.id} data={element} handleCommentsOpen={handleOpen} handleDelete={handleDelete} />
                                     })
                                 }
                             </div>
@@ -149,6 +166,7 @@ export default function HomeScreen(props) {
                     </DialogContent>
                 </Dialog>
             </div>
+            <ToastContainer />
         </div>
     )
 }
