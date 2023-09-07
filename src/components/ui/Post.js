@@ -16,7 +16,7 @@ export default function Post(props) {
         }).catch((error) => {
             console.log(error)
         })
-    }, [])
+    }, [props.data.userId])
 
     return (
         <Card style={{ marginBottom: 8 }} variant="outlined" sx={{ borderRadius: '10px' }}>

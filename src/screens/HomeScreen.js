@@ -2,7 +2,7 @@ import Post from "../components/ui/Post";
 import Container from '@mui/material/Container';
 import Comment from "../components/ui/Comment";
 import { useEffect, useState } from "react";
-import { Typography, InputAdornment, Snackbar } from "@mui/material";
+import { Typography, InputAdornment} from "@mui/material";
 import IconButton from '@mui/material/IconButton';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
