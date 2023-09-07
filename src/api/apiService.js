@@ -1,7 +1,8 @@
 import axios from "axios";
-import {baseUrl} from "./config";
 
-export async function getPosts(token){
+const baseUrl = "https://jsonplaceholder.typicode.com"
+
+export async function getPosts(){
     return await axios.get(`${baseUrl}/posts`)
 }
 
