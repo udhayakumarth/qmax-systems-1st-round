@@ -5,19 +5,27 @@ import Divider from '@mui/material/Divider';
 import CommentIcon from '@mui/icons-material/Comment';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import {useState} from "react";
+import { useState,useEffect } from "react";
+import { getUser } from "../../api/apiService";
 
 export default function Post(props){
+    const [user,setUser] = useState({});
+    useEffect(() => {
+        getUser(props.data.userId).then((res) => {
+           setUser(res.data)
+        })
+      }, [])
 
     return(
         <Card style={{marginBottom:8}} variant="outlined" sx={{ borderRadius: '10px' }}>
             <CardHeader
                 avatar={
                     <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                        R
+                        {user.name?.substring(0,1)}
                     </Avatar>
                 }
-                title="Shrimp and Chorizo Paella"
+                title={user?.name}
+                subheader={`@${user?.username}`}
                 action={
                     <IconButton aria-label="delete">
                         <DeleteIcon />
@@ -25,10 +33,11 @@ export default function Post(props){
                 }
             />
             <CardContent>
+            <Typography variant="subtitle1" gutterBottom>
+                    {props.data.title}
+                </Typography>
                 <Typography variant="body2" color="text.secondary">
-                    This impressive paella is a perfect party dish and a fun meal to cook
-                    together with your guests. Add 1 cup of frozen peas along with the mussels,
-                    if you like.
+                    {props.data.body}
                 </Typography>
             </CardContent>
             <Divider variant="middle" />

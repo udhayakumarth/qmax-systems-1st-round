@@ -1,8 +1,8 @@
 import Post from "../components/ui/Post";
 import Container from '@mui/material/Container';
 import Comment from "../components/ui/Comment";
-import {useState} from "react";
-import {Modal,Typography,Button} from "@mui/material";
+import { useEffect, useState } from "react";
+import { Typography, Button } from "@mui/material";
 import IconButton from '@mui/material/IconButton';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
@@ -10,20 +10,21 @@ import DialogTitle from '@mui/material/DialogTitle';
 import CloseIcon from "@mui/icons-material/Close";
 import Divider from "@mui/material/Divider";
 import RefreshIcon from '@mui/icons-material/Refresh';
-import Grid from "@mui/material/Grid";
 import SearchIcon from '@mui/icons-material/Search';
 import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
 import InputBase from '@mui/material/InputBase';
-import MenuIcon from '@mui/icons-material/Menu';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-export default function HomeScreen(){
+export default function HomeScreen(props) {
 
-    const posts = useState();
+    const [posts, setPosts] = useState([]);
 
-    const[open,setOpen] = useState(false);
+    useEffect(() => {
+        setPosts(props.posts)
+    }, [props])
+
+    const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
@@ -56,7 +57,6 @@ export default function HomeScreen(){
         color: 'inherit',
         '& .MuiInputBase-input': {
             padding: theme.spacing(1, 1, 1, 0),
-            // vertical padding + font size from searchIcon
             paddingLeft: `calc(1em + ${theme.spacing(4)})`,
             transition: theme.transitions.create('width'),
             width: '100%',
@@ -69,10 +69,10 @@ export default function HomeScreen(){
         },
     }));
 
-
-    return(
+    console.log(posts.length);
+    return (
         <div>
-            <Box sx={{ flexGrow: 1 }} style={{marginBottom:100}}>
+            <Box sx={{ flexGrow: 1 }} style={{ marginBottom: 100 }}>
                 <AppBar position="fixed">
                     <Toolbar>
                         <Typography
@@ -83,8 +83,8 @@ export default function HomeScreen(){
                         >
                             Posts
                         </Typography>
-                        <Button variant="outlined" startIcon={<RefreshIcon style={{color:"white"}} />}>
-                            <Typography style={{color:"white"}}>Refersh</Typography>
+                        <Button variant="outlined" startIcon={<RefreshIcon style={{ color: "white" }} />}>
+                            <Typography style={{ color: "white" }}>Refersh</Typography>
                         </Button>
                         <Search>
                             <SearchIconWrapper>
@@ -99,16 +99,25 @@ export default function HomeScreen(){
                 </AppBar>
             </Box>
             <div>
-                <Container  maxWidth="md">
-                    <Container  maxWidth="sm">
-                        <Typography style={{marginBottom:16}} variant="body2" color="text.secondary">
+                <Container maxWidth="md">
+                    <Container maxWidth="sm">
+                        <Typography style={{ marginBottom: 16 }} variant="body2" color="text.secondary">
                             All Posts
                         </Typography>
-                        <Divider style={{marginBottom:8}} />
-                        <Post handleCommentsOpen={handleOpen}/>
-                        <Post handleCommentsOpen={handleOpen}/>
-                        <Post handleCommentsOpen={handleOpen}/>
-                        <Post handleCommentsOpen={handleOpen}/>
+                        <Divider style={{ marginBottom: 8 }} />
+                        {posts.length > 0 ?
+                            <div>
+                                {
+                                    posts.map((element) => {
+                                        return <Post key={element.id} data={element} handleCommentsOpen={handleOpen} />
+                                    })
+                                }
+                            </div>
+                            :
+                            <Typography variant="body2" color="text.secondary">
+                                No Post Found.
+                            </Typography>}
+
                     </Container>
                 </Container>
                 <Dialog
@@ -134,8 +143,8 @@ export default function HomeScreen(){
                         <CloseIcon />
                     </IconButton>
                     <DialogContent>
-                        <Comment/>
-                        <Comment/>
+                        <Comment />
+                        <Comment />
                     </DialogContent>
                 </Dialog>
             </div>
